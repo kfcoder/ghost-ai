@@ -4,11 +4,11 @@ Update this file whenever the current phase, active feature, or implementation s
 
 ## Current Phase
 
-- Not started
+- In progress
 
 ## Current Goal
 
-- Define the immediate implementation goal here.
+- Install and configure the dark Ghost AI design system and its required shadcn/ui primitives.
 
 ## Completed
 
@@ -16,11 +16,11 @@ Update this file whenever the current phase, active feature, or implementation s
 
 ## In Progress
 
-- None yet.
+- Feature 01: Design system and UI primitives.
 
 ## Next Up
 
-- Add the next planned feature unit here.
+- Verify design-system component imports and dark-theme styling.
 
 ## Open Questions
 
