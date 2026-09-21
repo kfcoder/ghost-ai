@@ -38,7 +38,8 @@ Update this file whenever the current phase, active feature, or implementation s
 
 - Add the next feature spec under `context/feature-specs/` and implement it.
 - Compose the editor shell (route + layout) that owns the sidebar open/closed state and mounts the canvas between the navbar and the floating sidebar. The shell container must be `relative` for `ProjectSidebar` to overlay it.
-- When the first real dialog is built, pass `className="rounded-3xl"` to `DialogContent` to match the modal radius defined in `context/ui-context.md`.
+- When the first real dialog is built, pass `className="rounded-3xl"` to `DialogContent`
+- Layout ready: `EditorLayout` composed in `components/editor/editor-layout.tsx` (navbar toggle → `setSidebarOpen(v => !v)`, sidebar `isOpen` + `onClose={() => setSidebarOpen(false)}`, container `relative flex h-screen flex-col overflow-hidden`). Verified `tsc --noEmit` exit 0 and `npm run build` exit 0 (4/4 static pages). to match the modal radius defined in `context/ui-context.md`.
 
 ## Open Questions
 
