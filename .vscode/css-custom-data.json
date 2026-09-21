@@ -1,0 +1,96 @@
+{
+  "$schema": "https://raw.githubusercontent.com/microsoft/vscode-css-languageservice/main/docs/customData.schema.json",
+  "version": 1.1,
+  "atDirectives": [
+    {
+      "name": "@theme",
+      "description": "Tailwind CSS: declares design tokens (colors, fonts, radius) that become utilities.",
+      "references": [
+        {
+          "name": "Tailwind docs: @theme",
+          "url": "https://tailwindcss.com/docs/functions-and-directives#theme"
+        }
+      ]
+    },
+    {
+      "name": "@custom-variant",
+      "description": "Tailwind CSS: registers a custom variant. Used in globals.css for the dark-only theme.",
+      "references": [
+        {
+          "name": "Tailwind docs: @custom-variant",
+          "url": "https://tailwindcss.com/docs/functions-and-directives#custom-variant"
+        }
+      ]
+    },
+    {
+      "name": "@apply",
+      "description": "Tailwind CSS: inlines utility classes into the current rule.",
+      "references": [
+        {
+          "name": "Tailwind docs: @apply",
+          "url": "https://tailwindcss.com/docs/functions-and-directives#apply"
+        }
+      ]
+    },
+    {
+      "name": "@utility",
+      "description": "Tailwind CSS: defines a custom utility class.",
+      "references": [
+        {
+          "name": "Tailwind docs: @utility",
+          "url": "https://tailwindcss.com/docs/functions-and-directives#utility"
+        }
+      ]
+    },
+    {
+      "name": "@variant",
+      "description": "Tailwind CSS: applies a variant to nested styles.",
+      "references": [
+        {
+          "name": "Tailwind docs: @variant",
+          "url": "https://tailwindcss.com/docs/functions-and-directives#variant"
+        }
+      ]
+    },
+    {
+      "name": "@source",
+      "description": "Tailwind CSS: registers extra files to scan for utility classes.",
+      "references": [
+        {
+          "name": "Tailwind docs: @source",
+          "url": "https://tailwindcss.com/docs/functions-and-directives#source"
+        }
+      ]
+    },
+    {
+      "name": "@plugin",
+      "description": "Tailwind CSS: loads a legacy JavaScript plugin.",
+      "references": [
+        {
+          "name": "Tailwind docs: @plugin",
+          "url": "https://tailwindcss.com/docs/functions-and-directives#plugin"
+        }
+      ]
+    },
+    {
+      "name": "@config",
+      "description": "Tailwind CSS: loads a legacy JavaScript configuration file.",
+      "references": [
+        {
+          "name": "Tailwind docs: @config",
+          "url": "https://tailwindcss.com/docs/functions-and-directives#config"
+        }
+      ]
+    },
+    {
+      "name": "@reference",
+      "description": "Tailwind CSS: imports theme variables without emitting utilities, for component-scoped CSS.",
+      "references": [
+        {
+          "name": "Tailwind docs: @reference",
+          "url": "https://tailwindcss.com/docs/functions-and-directives#reference"
+        }
+      ]
+    }
+  ]
+}
