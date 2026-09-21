@@ -42,7 +42,7 @@ Update this file whenever the current phase, active feature, or implementation s
 
 ## Open Questions
 
-- Add unresolved product or implementation questions here.
+- Should a `/preview` route for the editor chrome live in the repo? Feature 02 only asked for the components, so the temporary `/preview` and `app/_ts-check` verification pages were deleted and the chrome is not mounted anywhere yet. Recreating `/preview` as a real route would make the navbar + sidebar viewable in the browser and would also clear the leftover editor tabs that still report `ts(2307)` for those deleted files.
 
 ## Architecture Decisions
 
