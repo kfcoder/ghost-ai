@@ -8,7 +8,7 @@ Update this file whenever the current phase, active feature, or implementation s
 
 ## Current Goal
 
-- Install and configure the dark Ghost AI design system and its required shadcn/ui primitives.
+- None — Feature 02 (editor chrome) is complete. Next: add the following feature spec under `context/feature-specs/`.
 
 ## Completed
 
@@ -21,6 +21,15 @@ Update this file whenever the current phase, active feature, or implementation s
   - Ghost AI palette from `context/ui-context.md` mapped in `app/globals.css` — raw custom properties plus `@theme inline` tokens: `bg-base`, `bg-surface`, `bg-elevated`, `bg-subtle`, `border-surface-border`, `border-surface-border-subtle`, `text-copy-primary`, `text-copy-secondary`, `text-copy-muted`, `text-copy-faint`, `text-brand`, `bg-accent-dim`, `text-ai`, `text-ai-text`, `text-error`, `text-success`, `text-warning`.
   - Verified: `tsc --noEmit` exits 0; `npm run build` exits 0 (compiled successfully, 4/4 static pages).
 
+- Feature 02: Editor chrome (`context/feature-specs/02-editor.md`).
+  - `components/editor/editor-navbar.tsx` — fixed-height (`h-14`) navbar with left / center / right sections; the left section holds the sidebar toggle button (`PanelLeftOpen` when closed, `PanelLeftClose` when open, plus `aria-expanded` / `aria-controls`); the right section is intentionally empty for now; dark `bg-surface` with a subtle `border-b border-surface-border`.
+  - `components/editor/project-sidebar.tsx` — floating sidebar that slides in from the left (`translate-x-0` / `-translate-x-full` with `duration-300`), positioned `absolute inset-y-0 left-0` so opening it overlays the canvas and never pushes page content; panel is `rounded-2xl`, semi-transparent (`bg-surface/80`) with `backdrop-blur-md` and a subtle border, inset by 0.75rem inside the sidebar track; header with `Projects` title and a close button; shadcn `Tabs` for `My Projects` / `Shared`, both rendering an empty placeholder state (icon, title, description); full-width `New Project` button with a `Plus` icon pinned to the bottom.
+  - Collapsed state is inert (`inert` plus `pointer-events-none`) so the hidden sidebar cannot be focused or clicked.
+  - `PROJECT_SIDEBAR_ID` is exported from the sidebar and imported by the navbar so the toggle button stays linked to the sidebar element.
+  - Dialog pattern: the shadcn semantic tokens in `app/globals.css` are now mapped to the Ghost AI palette (`--popover` → `--bg-elevated`, `--card` → `--bg-surface`, `--muted` → `--bg-subtle`, `--border` → `--border-default`, `--input` → `--border-subtle`, `--ring` → `--accent-primary`, `--primary` → `--accent-primary`, …), so `Dialog` title, description and footer actions resolve to Ghost AI colors without overriding foundation components. No concrete dialogs were built.
+  - Fixed the font token wiring: `--font-sans` referenced itself, so `html { font-family: var(--font-sans) }` was invalid and the loaded Geist fonts were never applied. `--font-sans` now maps to `--font-geist-sans` and `--font-mono` to `--font-geist-mono`.
+  - Verified: `npm run lint` exits 0; `npm run build` exits 0 (compiled successfully, TypeScript clean, 4/4 static pages); prerendered HTML and emitted CSS inspected to confirm the chrome markup, the Ghost AI token wiring, and the dialog/tab styling.
+
 ## In Progress
 
 - None.
@@ -28,7 +37,8 @@ Update this file whenever the current phase, active feature, or implementation s
 ## Next Up
 
 - Add the next feature spec under `context/feature-specs/` and implement it.
-- Optionally wire the shadcn semantic tokens (`--background`, `--card`, `--border`, `--popover`, `--ring`) to the Ghost AI palette so base shadcn components render with the custom colors by default.
+- Compose the editor shell (route + layout) that owns the sidebar open/closed state and mounts the canvas between the navbar and the floating sidebar. The shell container must be `relative` for `ProjectSidebar` to overlay it.
+- When the first real dialog is built, pass `className="rounded-3xl"` to `DialogContent` to match the modal radius defined in `context/ui-context.md`.
 
 ## Open Questions
 
@@ -37,7 +47,14 @@ Update this file whenever the current phase, active feature, or implementation s
 ## Architecture Decisions
 
 - Dark-only theme: the app never renders a light mode, so the Ghost AI palette variables live in `:root` and the `dark` class is hardcoded on `<html>` rather than toggled at runtime.
+- Editor chrome stays presentational: `EditorNavbar` receives `isSidebarOpen` / `onToggleSidebar` and `ProjectSidebar` receives `isOpen` / `onClose`, so the editor shell owns the state and the chrome can be reused by every editor screen.
+- The project sidebar floats instead of reflowing: it is `absolute inset-y-0 left-0` inside a `relative` editor shell and animates with `transform`, so opening it overlays the canvas rather than pushing page content.
+- Foundation components are never restyled to get the theme: `components/ui/*` stays untouched and the shadcn semantic tokens are re-pointed at the Ghost AI palette in `app/globals.css` instead. That is what makes `Dialog` (title, description, footer actions) and `Tabs` render on-brand.
+- Modal radius: shadcn `DialogContent` ships `rounded-xl` while `context/ui-context.md` requires `rounded-3xl` for modals; dialogs override it at the call site with `className="rounded-3xl"`.
 
 ## Session Notes
 
 - `LayoutProps` / `PageProps` are global Next.js types generated into `.next/types`. Deleting `.next` makes `tsc --noEmit` fail with `Cannot find name 'LayoutProps'` until `next build` / `next dev` regenerates them — run a build before trusting a standalone `tsc` run.
+- Font tokens were fixed in Feature 02: `--font-sans` used to reference itself (`var(--font-sans)`), which made `html { font-family: var(--font-sans) }` invalid at computed-value time and silently dropped the Geist fonts. `--font-sans` now maps to `--font-geist-sans` and `--font-mono` to `--font-geist-mono`.
+- Rendering of the new chrome was verified by temporarily mounting both components in a throwaway `/preview` route, inspecting the prerendered HTML output, then deleting the route — the final build serves only `/` and `/_not-found`.
+- `inert={!isOpen}` (React 19 supports the boolean `inert` attribute) keeps the collapsed sidebar out of the tab order, in addition to `pointer-events-none` for the mouse.
