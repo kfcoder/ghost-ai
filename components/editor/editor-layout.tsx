@@ -9,6 +9,8 @@ import { cn } from "@/lib/utils"
 
 interface EditorLayoutProps {
   children?: ReactNode
+  /** Forwarded to the navbar's right section, so the route owns that slot. */
+  rightSection?: ReactNode
   className?: string
 }
 
@@ -20,7 +22,7 @@ interface EditorLayoutProps {
  * The container is `relative` so the sidebar's `absolute` positioning is
  * resolved against this shell rather than the viewport.
  */
-function EditorLayout({ children, className }: EditorLayoutProps) {
+function EditorLayout({ children, rightSection, className }: EditorLayoutProps) {
   const [isSidebarOpen, setSidebarOpen] = useState(false)
 
   return (
@@ -34,6 +36,7 @@ function EditorLayout({ children, className }: EditorLayoutProps) {
       <EditorNavbar
         isSidebarOpen={isSidebarOpen}
         onToggleSidebar={() => setSidebarOpen((v) => !v)}
+        rightSection={rightSection}
       />
 
       <main className="flex-1 overflow-auto">{children}</main>
