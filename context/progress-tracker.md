@@ -32,14 +32,13 @@ Update this file whenever the current phase, active feature, or implementation s
 
 ## In Progress
 
-- Rollback to Feature 02 scope: all Clerk/auth (03-auth.md) and editor-shell route/session UI (04-editor-shell.md) implementation removed; tree verified identical to `main` (c14b327) except the `onClose` clarification in `02-editor.md`.
+- Strict 02-editor coherence: `components/editor/` holds only `editor-navbar.tsx` + `project-sidebar.tsx`; `editor-layout.tsx` removed (it was never named in `02-editor.md` and came from editor-shell work on `main` c14b327). Dialog pattern via themed shadcn tokens only, no concrete dialogs, no route mounting.
 
 ## Next Up
 
 - Add the next feature spec under `context/feature-specs/` and implement it.
 - Compose the editor shell (route + layout) that owns the sidebar open/closed state and mounts the canvas between the navbar and the floating sidebar. The shell container must be `relative` for `ProjectSidebar` to overlay it.
-- When the first real dialog is built, pass `className="rounded-3xl"` to `DialogContent`
-- Layout ready: `EditorLayout` composed in `components/editor/editor-layout.tsx` (navbar toggle → `setSidebarOpen(v => !v)`, sidebar `isOpen` + `onClose={() => setSidebarOpen(false)}`, container `relative flex h-screen flex-col overflow-hidden`). Verified `tsc --noEmit` exit 0 and `npm run build` exit 0 (4/4 static pages). to match the modal radius defined in `context/ui-context.md`.
+- When the first real dialog is built, pass `className="rounded-3xl"` to `DialogContent` to match the modal radius defined in `context/ui-context.md`.
 
 ## Open Questions
 
@@ -48,7 +47,7 @@ Update this file whenever the current phase, active feature, or implementation s
 ## Architecture Decisions
 
 - Dark-only theme: the app never renders a light mode, so the Ghost AI palette variables live in `:root` and the `dark` class is hardcoded on `<html>` rather than toggled at runtime.
-- Editor chrome stays presentational: `EditorNavbar` receives `isSidebarOpen` / `onToggleSidebar` and `ProjectSidebar` receives `isOpen` / `onClose`, so the editor shell owns the state and the chrome can be reused by every editor screen.
+- Editor chrome stays presentational: `EditorNavbar` receives `isSidebarOpen` / `onToggleSidebar` and `ProjectSidebar` receives `isOpen` / `onClose`, so a future editor shell can own the state and the chrome can be reused by every editor screen. No shell/layout component exists yet per strict 02-editor scope.
 - The project sidebar floats instead of reflowing: it is `absolute inset-y-0 left-0` inside a `relative` editor shell and animates with `transform`, so opening it overlays the canvas rather than pushing page content.
 - Foundation components are never restyled to get the theme: `components/ui/*` stays untouched and the shadcn semantic tokens are re-pointed at the Ghost AI palette in `app/globals.css` instead. That is what makes `Dialog` (title, description, footer actions) and `Tabs` render on-brand.
 - Modal radius: shadcn `DialogContent` ships `rounded-xl` while `context/ui-context.md` requires `rounded-3xl` for modals; dialogs override it at the call site with `className="rounded-3xl"`.
