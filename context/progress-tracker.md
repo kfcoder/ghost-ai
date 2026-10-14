@@ -4,7 +4,7 @@ Update this file whenever the current phase, active feature, or implementation s
 
 ## Current Phase
 
-- In progress
+- Feature 02 complete, verified against strict 02-editor scope (this commit).
 
 ## Current Goal
 
@@ -19,7 +19,7 @@ Update this file whenever the current phase, active feature, or implementation s
   - `lib/utils.ts` exposes the reusable `cn()` helper for merging Tailwind classes.
   - Dark-only theme enforced: `dark` class applied on `<html>` in `app/layout.tsx`; no light mode is rendered.
   - Ghost AI palette from `context/ui-context.md` mapped in `app/globals.css` — raw custom properties plus `@theme inline` tokens: `bg-base`, `bg-surface`, `bg-elevated`, `bg-subtle`, `border-surface-border`, `border-surface-border-subtle`, `text-copy-primary`, `text-copy-secondary`, `text-copy-muted`, `text-copy-faint`, `text-brand`, `bg-accent-dim`, `text-ai`, `text-ai-text`, `text-error`, `text-success`, `text-warning`.
-  - Verified: `tsc --noEmit` exits 0; `npm run build` exits 0 (compiled successfully, 4/4 static pages).
+  - Verified: `tsc --noEmit` exits 0; `npm run build` exits 0 (compiled successfully, 2/2 static pages: `/` + `/_not-found`).
 
 - Feature 02: Editor chrome (`context/feature-specs/02-editor.md`).
   - `components/editor/editor-navbar.tsx` — fixed-height (`h-14`) navbar with left / center / right sections; the left section holds the sidebar toggle button (`PanelLeftOpen` when closed, `PanelLeftClose` when open, plus `aria-expanded` / `aria-controls`); the right section is intentionally empty for now; dark `bg-surface` with a subtle `border-b border-surface-border`.
@@ -28,11 +28,11 @@ Update this file whenever the current phase, active feature, or implementation s
   - `PROJECT_SIDEBAR_ID` is exported from the sidebar and imported by the navbar so the toggle button stays linked to the sidebar element.
   - Dialog pattern: the shadcn semantic tokens in `app/globals.css` are now mapped to the Ghost AI palette (`--popover` → `--bg-elevated`, `--card` → `--bg-surface`, `--muted` → `--bg-subtle`, `--border` → `--border-default`, `--input` → `--border-subtle`, `--ring` → `--accent-primary`, `--primary` → `--accent-primary`, …), so `Dialog` title, description and footer actions resolve to Ghost AI colors without overriding foundation components. No concrete dialogs were built.
   - Fixed the font token wiring: `--font-sans` referenced itself, so `html { font-family: var(--font-sans) }` was invalid and the loaded Geist fonts were never applied. `--font-sans` now maps to `--font-geist-sans` and `--font-mono` to `--font-geist-mono`.
-  - Verified: `npm run lint` exits 0; `npm run build` exits 0 (compiled successfully, TypeScript clean, 4/4 static pages); prerendered HTML and emitted CSS inspected to confirm the chrome markup, the Ghost AI token wiring, and the dialog/tab styling.
+  - Verified: `npm run lint` exits 0; `npm run build` exits 0 (compiled successfully, TypeScript clean, 2/2 static pages: `/` + `/_not-found`); the chrome is intentionally not mounted on any route yet per strict 02-editor scope (components only), so no prerendered chrome markup exists in this build.
 
 ## In Progress
 
-- Strict 02-editor coherence: `components/editor/` holds only `editor-navbar.tsx` + `project-sidebar.tsx`; `editor-layout.tsx` removed (it was never named in `02-editor.md` and came from editor-shell work on `main` c14b327). Dialog pattern via themed shadcn tokens only, no concrete dialogs, no route mounting.
+- None.
 
 ## Next Up
 
@@ -47,6 +47,7 @@ Update this file whenever the current phase, active feature, or implementation s
 ## Architecture Decisions
 
 - Dark-only theme: the app never renders a light mode, so the Ghost AI palette variables live in `:root` and the `dark` class is hardcoded on `<html>` rather than toggled at runtime.
+- Strict 02-editor scope (verified this commit): `components/editor/` holds only `editor-navbar.tsx` + `project-sidebar.tsx`; `editor-layout.tsx` removed (never named in `02-editor.md`); dialog pattern via themed shadcn tokens only, no concrete dialogs, no route mounting. `02-editor.md` clarifies `isOpen` + `onClose` (the close button needs `onClose`).
 - Editor chrome stays presentational: `EditorNavbar` receives `isSidebarOpen` / `onToggleSidebar` and `ProjectSidebar` receives `isOpen` / `onClose`, so a future editor shell can own the state and the chrome can be reused by every editor screen. No shell/layout component exists yet per strict 02-editor scope.
 - The project sidebar floats instead of reflowing: it is `absolute inset-y-0 left-0` inside a `relative` editor shell and animates with `transform`, so opening it overlays the canvas rather than pushing page content.
 - Foundation components are never restyled to get the theme: `components/ui/*` stays untouched and the shadcn semantic tokens are re-pointed at the Ghost AI palette in `app/globals.css` instead. That is what makes `Dialog` (title, description, footer actions) and `Tabs` render on-brand.
@@ -56,7 +57,7 @@ Update this file whenever the current phase, active feature, or implementation s
 
 - `LayoutProps` / `PageProps` are global Next.js types generated into `.next/types`. Deleting `.next` makes `tsc --noEmit` fail with `Cannot find name 'LayoutProps'` until `next build` / `next dev` regenerates them — run a build before trusting a standalone `tsc` run.
 - Font tokens were fixed in Feature 02: `--font-sans` used to reference itself (`var(--font-sans)`), which made `html { font-family: var(--font-sans) }` invalid at computed-value time and silently dropped the Geist fonts. `--font-sans` now maps to `--font-geist-sans` and `--font-mono` to `--font-geist-mono`.
-- Rendering of the new chrome was verified by temporarily mounting both components in a throwaway `/preview` route, inspecting the prerendered HTML output, then deleting the route — the final build serves only `/` and `/_not-found`.
+- Rendering of the new chrome was verified during Feature 02 by temporarily mounting both components in a throwaway `/preview` route, inspecting the prerendered HTML output, then deleting the route. After the strict-02 rollback the chrome is not mounted anywhere, so the current build serves only `/` and `/_not-found` with no chrome markup to inspect.
 - `inert={!isOpen}` (React 19 supports the boolean `inert` attribute) keeps the collapsed sidebar out of the tab order, in addition to `pointer-events-none` for the mouse.
 - VS Code reported 7 problems after Feature 02, none of them real in the sources. The 2 TypeScript `2307` errors point at `app/preview/page.tsx`, the throwaway verification route deleted before the Feature 02 commit: its editor tab stayed open, so the TS server keeps checking the orphaned buffer in an inferred project that does not apply the `@/*` path mapping from `tsconfig.json`, and reports both `@/components/editor/*` imports as missing even though `components/editor/editor-navbar.tsx` and `components/editor/project-sidebar.tsx` exist on disk. Evidence: `app/` contains only `favicon.ico`, `globals.css`, `layout.tsx`, `page.tsx`; a scratch file importing both modules with the exact same specifiers type-checked clean (`tsc --noEmit` exit 0) and was then removed; `tsc --noEmit` and `npm run build` both exit 0, and neither `.next/types` nor `.next/dev/types` references the preview route. Remedy: close the stale `page.tsx` tab and answer "Don't Save" when VS Code offers to save it (or use View: Close All Editors + Don't Save), then run "Developer: Reload Window". A reload on its own is not enough: with hot exit VS Code restores the unsaved buffer of the deleted file, so the TS server keeps reporting on it. The other 5 warnings are `css(unknownAtRules)` for the Tailwind v4 directives `@custom-variant`, `@theme` and `@apply` in `app/globals.css`. The same stale-diagnostic effect appears for the throwaway `app/_ts-check/page.tsx` used as resolution proof while it existed; both sets disappear only once their tabs are released.
 - The Tailwind v4 CSS warnings are handled with `.vscode/css-custom-data.json` (declares the Tailwind v4 at-rules for the built-in CSS language service) plus `css.customData` and `css.lint.unknownAtRules: "ignore"` in `.vscode/settings.json`: the custom data documents/completes the directives, and the lint override makes the false positives disappear deterministically. No Tailwind IntelliSense extension is installed in this VS Code, so `files.associations: { "*.css": "tailwindcss" }` is not an option.
