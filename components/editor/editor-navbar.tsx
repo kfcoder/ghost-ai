@@ -1,7 +1,5 @@
 "use client"
 
-import type { ReactNode } from "react"
-
 import { PanelLeftClose, PanelLeftOpen } from "lucide-react"
 
 import { PROJECT_SIDEBAR_ID } from "@/components/editor/project-sidebar"
@@ -11,15 +9,12 @@ import { cn } from "@/lib/utils"
 interface EditorNavbarProps {
   isSidebarOpen: boolean
   onToggleSidebar: () => void
-  /** Content for the right section. The editor route passes server-rendered session UI here. */
-  rightSection?: ReactNode
   className?: string
 }
 
 function EditorNavbar({
   isSidebarOpen,
   onToggleSidebar,
-  rightSection,
   className,
 }: EditorNavbarProps) {
   const SidebarToggleIcon = isSidebarOpen ? PanelLeftClose : PanelLeftOpen
@@ -49,9 +44,7 @@ function EditorNavbar({
 
       <div className="flex flex-1 items-center justify-center" />
 
-      <div className="flex flex-1 items-center justify-end gap-2">
-        {rightSection}
-      </div>
+      <div className="flex flex-1 items-center justify-end" />
     </header>
   )
 }
